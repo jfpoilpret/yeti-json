@@ -1,11 +1,9 @@
-This module defines a class that can be used from Yeti to parse JSON input string in a typesafe way.
-To use it in your own modules you will first need to define the following function:
+This module defines functions that can be used from Yeti to parse JSON input string 
+in a typesafe way.
+To use these functions, you just need to load the "json" module:
 
-    import json.YetiJson;
+    {readJson, readJson'} = load json;
     
-    parseJson template input is 'a -> string -> 'a =
-        YetiJson#parse(template as ~Object, input) unsafely_as 'a;
-
 Please also ensure that you put the following jars in the classpath:
 	- json_simple-1.1.jar
 	- json-1.0-SNAPSHOT.jar
@@ -16,7 +14,7 @@ If you want to use Yeti REPL then you can type the following command line:
 
 Usage examples follow:
 
-    > x1 = parseJson {a = "", b = 0, c = false} '{"a": "abc", "b": 100, "c": true}';
+    > x1 = readJson {a = "", b = 0, c = false} '{"a": "abc", "b": 100, "c": true}';
 
 The first argument acts as a "type template" to which the second argument must be mappable 
 after JSON parsing. An exception will occur if the template type doesn't match the type of
@@ -39,5 +37,14 @@ within structs, then the template should be the same.
 
 Other usage examples with lists:
 
-    > x2 = parseJson [] '[1, 2, 3]';
-    > x2 = parseJson [0] '[1, 2, 3]';
+    > x2 = readJson [] '[1, 2, 3]';
+    > x2 = readJson [0] '[1, 2, 3]';
+
+The second function takes a list of variants that allows you to specify several 
+different templates that the JSON input may map to; you would use this function
+as in the following example:
+
+    > x3 = readJson' [A {a = "", b = 0}, B {b = "", c = false}] '{"a": "abc", "b": 123}';
+
+This allows you to use pattern matching when the JSON input that you get may 
+be of different types.

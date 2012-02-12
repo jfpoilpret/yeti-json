@@ -26,6 +26,7 @@ import yeti.lang.GenericStruct;
 import yeti.lang.MList;
 import yeti.lang.Num;
 import yeti.lang.Struct;
+import yeti.lang.Tag;
 
 //TODO support conversion of JSONObject into Hash (not just Struct)
 public final class YetiJson
@@ -33,6 +34,37 @@ public final class YetiJson
 	static public Object parse(Object template, String input) throws ParseException
 	{
 		return convertValue(template, _parser.get().parse(input));
+	}
+
+	@SuppressWarnings("rawtypes") 
+	static public Object parse(List templates, String input) throws ParseException
+	{
+		if (templates.isEmpty())
+		{
+			failWith("templates must not be the empty list []");
+		}
+		// Check that templates are variants
+		for (Object t: templates)
+		{
+			if (t instanceof Tag)
+			{
+				Tag tag = (Tag) t;
+				try
+				{
+					return new Tag(parse(tag.value, input), tag.name);
+				}
+				catch (Exception e)
+				{
+					// Continue check of next template
+				}
+			}
+			else
+			{
+				failWith("templates must only contain variant items");
+			}
+		}
+		failWith("input doesn't match any template");
+		return null;
 	}
 
 	@SuppressWarnings("rawtypes") 
