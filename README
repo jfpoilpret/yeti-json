@@ -1,10 +1,10 @@
 This module defines a class that can be used from Yeti to parse JSON input string in a typesafe way.
 To use it in your own modules you will first need to define the following function:
 
-	import json.YetiJson;
-	
-	parseJson template input is 'a -> string -> 'a =
-		YetiJson#parse(template as ~Object, input) unsafely_as 'a;
+    import json.YetiJson;
+    
+    parseJson template input is 'a -> string -> 'a =
+        YetiJson#parse(template as ~Object, input) unsafely_as 'a;
 
 Please also ensure that you put the following jars in the classpath:
 	- json_simple-1.1.jar
@@ -12,11 +12,11 @@ Please also ensure that you put the following jars in the classpath:
 
 If you want to use Yeti REPL then you can type the following command line:
 
-	$ java -cp json_simple-1.1.jar;json-1.0-SNAPSHOT.jar;yeti.jar yeti.lang.compiler.yeti
+    $ java -cp json_simple-1.1.jar;json-1.0-SNAPSHOT.jar;yeti.jar yeti.lang.compiler.yeti
 
 Usage examples follow:
 
-	> x1 = parseJson {a = "", b = 0, c = false} '{"a": "abc", "b": 100, "c": true}';
+    > x1 = parseJson {a = "", b = 0, c = false} '{"a": "abc", "b": 100, "c": true}';
 
 The first argument acts as a "type template" to which the second argument must be mappable 
 after JSON parsing. An exception will occur if the template type doesn't match the type of
@@ -24,18 +24,19 @@ the parsed input.
 
 Mapping principles follow:
 
-	JSON type	Yeti type	Comments
-	---------	---------	--------
-	object	struct	all fields from the yeti target struct must exist in JSON object
-	list	list	if yeti target list is not empty, then item type must match with JSON list items type
-	string	string	
-	number	number
-	boolean	boolean
+    JSON type     Yeti type    Comments
+    ---------     ---------    --------
+    object        struct       all fields from the yeti target struct must exist in JSON object
+    list          list         if yeti target list is not empty, then item type must match with 
+                               JSON list items type
+    string        string	
+    number        number
+    boolean       boolean
 
 The mapping is recursive, meaning that if JSON input defines list of lists or structs 
 within structs, then the template should be the same.
 
 Other usage examples with lists:
 
-	> x2 = parseJson [] '[1, 2, 3]';
-	> x2 = parseJson [0] '[1, 2, 3]';
+    > x2 = parseJson [] '[1, 2, 3]';
+    > x2 = parseJson [0] '[1, 2, 3]';
