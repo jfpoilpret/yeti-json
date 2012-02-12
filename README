@@ -26,9 +26,10 @@ Mapping principles follow:
 
     JSON type     Yeti type    Comments
     ---------     ---------    --------
-    object        struct       all fields from the yeti target struct must exist in JSON object
-    list          list         if yeti target list is not empty, then item type must match with 
-                               JSON list items type
+    object        struct       all fields from the yeti target struct must exist 
+                               in JSON object
+    list          list         if yeti target list is not empty, then item type 
+                               must match with JSON list items type
     string        string	
     number        number
     boolean       boolean
