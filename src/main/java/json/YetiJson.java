@@ -31,6 +31,9 @@ import yeti.lang.Tag;
 //TODO support conversion of JSONObject into Hash (not just Struct)
 public final class YetiJson
 {
+	static final private Tag NONE = new Tag(null, "None");
+	static final private String SOME_TAG = "Some";
+	
 	static public Object parse(Object template, String input) throws ParseException
 	{
 		return convertValue(template, _parser.get().parse(input));
@@ -131,6 +134,8 @@ public final class YetiJson
 		}
 	}
 
+	//TODO Make this method public
+	//TODO Try to add special conversion functions if needed
 	@SuppressWarnings("rawtypes") 
 	static private Object convertValue(Object expected, Object value)
 	{
@@ -157,6 +162,22 @@ public final class YetiJson
 		else if (expected instanceof Boolean && value instanceof Boolean)
 		{
 			return value;
+		}
+		else if (expected instanceof Tag && SOME_TAG.equals(((Tag) expected).name))
+		{
+			if (value == null)
+			{
+				return NONE;
+			}
+			else
+			{
+				Tag tag = (Tag) expected;
+				return new Tag(convertValue(tag.value, value), SOME_TAG);
+			}
+		}
+		else if (value == null && (expected == null || expected instanceof AList))
+		{
+			return null;
 		}
 		else
 		{

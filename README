@@ -28,6 +28,10 @@ Mapping principles follow:
     string        string	
     number        number
     boolean       boolean
+    
+    anything      Some 'a     'a must be convertible to type "anything"
+    null          Some 'a     in this case, Some 'a is replaced with None () in the result
+    null          list<'a>    in this case, the result is the empty list []
 
 The mapping is recursive, meaning that if JSON input defines list of lists or structs within structs, then the template should be the same.
 
