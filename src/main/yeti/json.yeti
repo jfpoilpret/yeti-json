@@ -8,9 +8,11 @@ module json;
 
 import json.YetiJson;
 
+some x _ = if true then Some x else None () fi;
+
 readJson template input is 'a -> string -> 'a =
 	YetiJson#parse(template as ~Object, input) unsafely_as 'a;
 readJson' templates input is list<'a> -> string -> 'a =
 	YetiJson#parse(templates as ~java.util.List, input) unsafely_as 'a;
 
-{readJson, readJson'}
+{readJson, readJson', some}

@@ -22,6 +22,7 @@ import org.json.simple.parser.ParseException;
 
 import yeti.lang.FailureException;
 import yeti.lang.AList;
+import yeti.lang.Fun;
 import yeti.lang.GenericStruct;
 import yeti.lang.MList;
 import yeti.lang.Num;
@@ -163,18 +164,30 @@ public final class YetiJson
 		{
 			return value;
 		}
-		else if (expected instanceof Tag && SOME_TAG.equals(((Tag) expected).name))
+		else if (isSome(expected))
 		{
+			//TODO
 			if (value == null)
 			{
-				return NONE;
+				return _none;
 			}
 			else
 			{
-				Tag tag = (Tag) expected;
-				return new Tag(convertValue(tag.value, value), SOME_TAG);
+				return new SomeFun(convertValue(expectedFromSome(expected), value));
 			}
 		}
+//		else if (expected instanceof Tag && SOME_TAG.equals(((Tag) expected).name))
+//		{
+//			if (value == null)
+//			{
+//				return NONE;
+//			}
+//			else
+//			{
+//				Tag tag = (Tag) expected;
+//				return new Tag(convertValue(tag.value, value), SOME_TAG);
+//			}
+//		}
 		else if (value == null && (expected == null || expected instanceof AList))
 		{
 			return null;
@@ -216,11 +229,58 @@ public final class YetiJson
 			return null;
 		}
 	}
+	
+	static private boolean isSome(Object expected)
+	{
+		if (expected instanceof Fun)
+		{
+			try
+			{
+				Object result = ((Fun) expected).apply(null);
+				return		result instanceof Tag
+						&&	SOME_TAG.equals(((Tag) result).name);
+			}
+			catch (Exception e)
+			{
+				// "some" function should never throw exception, thus this is not it
+			}
+		}
+		return false;
+	}
 
-	static private final void failWith(String message)
+	static private Object expectedFromSome(Object expected)
+	{
+		Tag result = (Tag) ((Fun) expected).apply(null);
+		return result.value;
+	}
+
+	static private void failWith(String message)
 	{
 		throw new FailureException(message);
 	}
+
+	static final private class SomeFun extends Fun
+	{
+		public SomeFun(Object value)
+		{
+			_value = new Tag(value, SOME_TAG);
+		}
+		
+		@Override public Object apply(Object arg)
+		{
+			return _value;
+		}
+		
+		final private Tag _value;
+	}
+	
+	static final private Fun _none = new Fun()
+	{
+		@Override public Object apply(Object arg)
+		{
+			return NONE;
+		}
+	};
 	
 	static final private ThreadLocal<JSONParser> _parser = new ThreadLocal<JSONParser>()
 	{
